@@ -60,7 +60,7 @@ func (r *Renderer) init(gl *webgl.Context) {
 	r.verts = 0
 	r.inds = 0
 
-	r.shader.loadShader(gl, "vertexShader.vert", "fragmentShader.frag")
+	r.shader.loadShader(gl, "shader/vertexShader.vert", "shader/fragmentShader.frag")
 
 	r.gl.UseProgram(r.shader.program)
 
@@ -82,11 +82,11 @@ func (r *Renderer) init(gl *webgl.Context) {
 	r.texBuffer = gl.CreateBuffer()
 	r.indexBuffer = gl.CreateBuffer()
 
-	r.tex.loadTexture(gl, "test.png")
+	r.tex.loadTexture(gl, "gfx/test.png")
 }
 
 func (r *Renderer) clear() {
-	r.gl.ClearColor(0.0, 0.0, 0.0, 1.0)
+	r.gl.ClearColor(0.5, 0.7, 1.0, 1.0)
 	r.gl.Clear(r.gl.COLOR_BUFFER_BIT | r.gl.DEPTH_BUFFER_BIT)
 }
 
@@ -98,7 +98,7 @@ func mat4ToFloat32(matrix mgl32.Mat4) []float32 {
 		matrix.At(3, 0), matrix.At(3, 1), matrix.At(3, 2), matrix.At(3, 3)}
 }
 
-func (r *Renderer) batchAdd(t *Texture, va *[]float32, ta *[]float32, ia *[]uint16) {
+func (r *Renderer) batchAdd(va *[]float32, ta *[]float32, ia *[]uint16) {
 	vlen := len(*va)
 	ilen := len(*ia)
 
@@ -121,20 +121,29 @@ func (r *Renderer) batchAdd(t *Texture, va *[]float32, ta *[]float32, ia *[]uint
 }
 
 func (r *Renderer) draw(t *Texture, va *[]float32, ta *[]float32, ia *[]uint16) {
-	r.batchAdd(t, va, ta, ia)
+	r.tex = *t
+	r.u_matrix = mgl32.Ident4()
+
+	r.batchAdd(va, ta, ia)
 }
 
 func (r *Renderer) render(t *Texture, um *mgl32.Mat4, va *[]float32, ta *[]float32, ia *[]uint16) {
+	if r.inds >= 3 {
+		r.flush()
+	}
+	r.tex = *t
+	r.u_matrix = *um
 
+	r.batchAdd(va, ta, ia)
+	r.flush()
 }
 
 func (r *Renderer) flush() {
 	r.draws += 1
 
-	r.u_matrix = mgl32.Ident4()
 	r.c_matrix = mgl32.Ident4()
 	r.p_matrix = mgl32.Ident4()
-	r.p_matrix = mgl32.Perspective(90.0, 1280.0/750.0, 0.1, 100.0) // doesn't work for some reason
+	r.p_matrix = mgl32.Perspective(90.0, 1280.0/750.0, 0.1, 100.0)
 
 	r.c_matrix = r.c_matrix.Mul4(mgl32.HomogRotate3DX(r.camRot[0]))
 	r.c_matrix = r.c_matrix.Mul4(mgl32.HomogRotate3DY(r.camRot[1]))

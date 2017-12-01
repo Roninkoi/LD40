@@ -42,5 +42,8 @@ func (g *Game) gameInput() {
 func (g *Game) tick() {
 	g.ticks += 1.0
 
+	g.world.ticks = g.ticks
+	g.world.tick()
+
 	g.gameInput()
 }

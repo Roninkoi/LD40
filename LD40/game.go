@@ -56,7 +56,7 @@ func (g *Game) Start() {
 
 	g.renderer.init(g.gl)
 
-	g.world.loadWorld()
+	g.world.loadWorld(g.gl)
 
 	g.input.init()
 	g.input.keyHandler()

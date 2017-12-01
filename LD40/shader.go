@@ -23,7 +23,7 @@ func (s *Shader) compile(gl *webgl.Context, shaderType int, source string) *js.O
 	gl.ShaderSource(newShader, source)
 	gl.CompileShader(newShader)
 
-	fmt.Println(source + "\n\n" + gl.GetShaderInfoLog(newShader))
+	fmt.Println(gl.GetShaderInfoLog(newShader))
 
 	return newShader
 }
