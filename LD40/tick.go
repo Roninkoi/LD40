@@ -41,6 +41,8 @@ func (g *Game) gameInput() {
 }
 
 func (g *Game) tick() {
+	tickdelta := timeNow()
+
 	g.ticks += 1.0
 
 	g.world.ticks = g.ticks
@@ -48,4 +50,6 @@ func (g *Game) tick() {
 	g.world.tick()
 
 	g.gameInput()
+
+	g.tick_time += timeNow() - tickdelta
 }

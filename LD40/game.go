@@ -78,10 +78,12 @@ func (g *Game) main(ftime *js.Object) {
 
 		g.fps = g.fps_ticks
 
-		fmt.Printf("fps %d%s%.2f%s", g.fps,
-			", rt: ", g.render_time/(float64)(g.fps_ticks), " ms\n")
+		fmt.Printf("fps %d%s%.2f%s%.2f%s", g.fps,
+			", rt: ", g.render_time/(float64)(g.fps_ticks), " ms, tt: ",
+				g.tick_time/(float64)(g.fps_ticks), " ms\n")
 
 		g.render_time = 0
+		g.tick_time = 0
 
 		g.fps_ticks = 0
 	}
