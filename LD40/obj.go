@@ -7,12 +7,40 @@ import (
 
 type Obj struct {
 	mesh Mesh
+	hull Hull
+	hasH bool
+
 	phys Phys
 }
 
 func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {
 	o.mesh.loadMesh(gl, p, t)
+
+	o.hasH = false
+
 	o.phys.init()
+
+	o.update()
+}
+
+func (o *Obj) loadObjH(gl *webgl.Context, p string, h string, no bool, t string) {
+	o.mesh.loadMesh(gl, p, t)
+
+	o.hasH = false
+
+	if h == "0" {
+		o.hull.loadHull(p, no)
+		o.hasH = true
+	} else {
+		if h != "nil" {
+			o.hull.loadHull(h, no)
+			o.hasH = true
+		}
+	}
+
+	o.phys.init()
+
+	o.update()
 }
 
 func (o *Obj) draw(r *Renderer) {
@@ -37,4 +65,8 @@ func (o *Obj) update() {
 	o.mesh.um = o.mesh.um.Mul4(mgl32.HomogRotate3DZ(o.phys.rot[2]))
 
 	o.mesh.update()
+
+	if o.hasH {
+		o.hull.update(&o.mesh)
+	}
 }

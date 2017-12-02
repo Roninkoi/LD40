@@ -12,6 +12,11 @@ type Mesh struct {
 	texData       []float32
 	indexData     []uint16
 
+	vertexNormals []float32
+
+	faceNormals []float32
+	faceNC []float32
+
 	tex Texture
 
 	um mgl32.Mat4
@@ -64,15 +69,25 @@ func (m *Mesh) parseFace(s string) (f int, t int) {
 	return facei - 1, texi - 1 // obj indices start at 1
 }
 
+func (m *Mesh) clearMesh() {
+	m.vertexData = nil
+	m.rawVertexData = nil
+	m.texData = nil
+	m.indexData = nil
+	m.faceNormals = nil
+	m.faceNC = nil
+}
+
 func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
-	m.tex.loadTexture(gl, t)
+	if t != "nil" {
+		m.tex.loadTexture(gl, t)
+	}
 
 	s := readFile(p)
 
 	sa := parse(s)
 
-	//m.vertexData = m.vertexData[:0] // leak?
-	m.vertexData = nil // apparently this works lol
+	m.clearMesh()
 
 	m.um = mgl32.Ident4()
 
@@ -161,7 +176,22 @@ func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 
 	m.vertexData = append(m.vertexData, m.rawVertexData...) // copy vertex data for transform
 
+	m.faceNormals = append(m.faceNormals, filledArray((int)((float64)(len(m.indexData))/3.0)*3, 0.0)...)
+	m.faceNC = append(m.faceNC, filledArray((int)((float64)(len(m.indexData))/3.0)*3, 0.0)...)
+
+	m.vertexNormals = append(m.vertexNormals, filledArray(len(m.vertexData), 0.0)...)
+
 	m.update()
+}
+
+func filledArray(l int, v float32) []float32 {
+	var a []float32
+
+	for i := 0; i <  l; i++ {
+		a = append(a, v)
+	}
+
+	return a
 }
 
 func (m *Mesh) transformVerts() {
@@ -176,8 +206,38 @@ func (m *Mesh) transformVerts() {
 	}
 }
 
+/*
+ * just face normals
+ */
 func (m *Mesh) getNormals() {
+	for i := 0; i < len(m.faceNormals)/3.0; i++ {
+		v0 := mgl32.Vec3{m.vertexData[m.indexData[i*3+0]*4], m.vertexData[m.indexData[i*3+0]*4+1], m.vertexData[m.indexData[i*3+0]*4+2]}
+		v1 := mgl32.Vec3{m.vertexData[m.indexData[i*3+1]*4], m.vertexData[m.indexData[i*3+1]*4+1], m.vertexData[m.indexData[i*3+1]*4+2]}
+		v2 := mgl32.Vec3{m.vertexData[m.indexData[i*3+2]*4], m.vertexData[m.indexData[i*3+2]*4+1], m.vertexData[m.indexData[i*3+2]*4+2]}
 
+		c := mgl32.Vec3{0.0, 0.0, 0.0}
+
+		c = c.Add(v0)
+		c = c.Add(v1)
+		c = c.Add(v2)
+
+		c = c.Mul(1.0 / 3.0)
+
+		m.faceNC[i*3 + 0] = c[0]
+		m.faceNC[i*3 + 1] = c[1]
+		m.faceNC[i*3 + 2] = c[2]
+
+		a := v0.Sub(v1)
+		b := v2.Sub(v1)
+
+		axb := a.Cross(b)
+
+		axb = axb.Normalize()
+
+		m.faceNormals[i*3 + 0] = axb[0]
+		m.faceNormals[i*3 + 1] = axb[1]
+		m.faceNormals[i*3 + 2] = axb[2]
+	}
 }
 
 func (m *Mesh) update() {

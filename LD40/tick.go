@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 func (g *Game) gameInput() {
@@ -43,6 +44,7 @@ func (g *Game) tick() {
 	g.ticks += 1.0
 
 	g.world.ticks = g.ticks
+	g.world.camPos = mgl32.Vec3{g.renderer.camPos[0], g.renderer.camPos[1], g.renderer.camPos[2]}
 	g.world.tick()
 
 	g.gameInput()
