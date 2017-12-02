@@ -54,8 +54,8 @@ type Renderer struct {
 func (r *Renderer) init(gl *webgl.Context) {
 	r.gl = gl
 
-	r.camPos = mgl32.Vec3{0.0}
-	r.camRot = mgl32.Vec3{0.0}
+	r.camPos = mgl32.Vec3{0.0, 0.0, 0.0}
+	r.camRot = mgl32.Vec3{0.0, 0.0, 0.0}
 
 	r.verts = 0
 	r.inds = 0
@@ -121,6 +121,10 @@ func (r *Renderer) batchAdd(va *[]float32, ta *[]float32, ia *[]uint16) {
 }
 
 func (r *Renderer) draw(t *Texture, va *[]float32, ta *[]float32, ia *[]uint16) {
+	if t.p != r.tex.p {
+		r.cflush()
+	}
+
 	r.tex = *t
 	r.u_matrix = mgl32.Ident4()
 
@@ -128,14 +132,19 @@ func (r *Renderer) draw(t *Texture, va *[]float32, ta *[]float32, ia *[]uint16) 
 }
 
 func (r *Renderer) render(t *Texture, um *mgl32.Mat4, va *[]float32, ta *[]float32, ia *[]uint16) {
-	if r.inds >= 3 {
-		r.flush()
-	}
+	r.cflush()
+
 	r.tex = *t
 	r.u_matrix = *um
 
 	r.batchAdd(va, ta, ia)
 	r.flush()
+}
+
+func (r *Renderer) cflush() {
+	if r.inds >= 3 {
+		r.flush()
+	}
 }
 
 func (r *Renderer) flush() {
@@ -203,7 +212,7 @@ func (g *Game) render() {
 
 	g.world.draw(&g.renderer)
 
-	g.renderer.flush()
+	g.renderer.cflush()
 
 	if (int)(g.ticks)%60 == 0 {
 		fmt.Print("draws ")

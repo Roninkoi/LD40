@@ -71,7 +71,8 @@ func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 
 	sa := parse(s)
 
-	m.vertexData = m.vertexData[:0] // leak?
+	//m.vertexData = m.vertexData[:0] // leak?
+	m.vertexData = nil // apparently this works lol
 
 	m.um = mgl32.Ident4()
 
@@ -157,12 +158,13 @@ func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 			m.texData = append(m.texData, 1.0)
 		}
 	}
+
+	m.vertexData = append(m.vertexData, m.rawVertexData...) // copy vertex data for transform
+
 	m.update()
 }
 
 func (m *Mesh) transformVerts() {
-	m.vertexData = m.rawVertexData
-
 	for i := 0; i < len(m.vertexData); i += 4 {
 		rv := mgl32.Vec3{m.rawVertexData[i+0], m.rawVertexData[i+1], m.rawVertexData[i+2]}
 
@@ -184,6 +186,16 @@ func (m *Mesh) update() {
 	m.getNormals()
 
 	m.getBoundingSphere()
+}
+
+func (m *Mesh) bsi(n *Mesh) bool {
+	intersects := false
+
+	if m.bsc.Sub(n.bsc).Len() < m.bsr + n.bsr {
+		intersects = true
+	}
+
+	return intersects
 }
 
 func (m *Mesh) collideMesh(n *Mesh) {
