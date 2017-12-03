@@ -4,7 +4,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"strconv"
 	"github.com/gopherjs/webgl"
-	"fmt"
 )
 
 type Mesh struct {
@@ -309,8 +308,6 @@ func (m *Mesh) getTriSize() {
 			m.tri_size = vl
 		}
 	}
-	fmt.Print("tri size ")
-	fmt.Println(m.tri_size)
 }
 
 func (m *Mesh) render(r *Renderer) {

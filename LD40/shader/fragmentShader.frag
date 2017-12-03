@@ -11,13 +11,15 @@ uniform sampler2D texture;
 void main() {
     vec4 col = texture2D(texture, v_tex);
 
-    col += vec4(0.2, 0.14, 0.0, 0.0);
+    col.r *= col.r*1.1;
+    col.g *= col.g*1.05;
+    col.b *= col.b;
 
-    float depth = gl_FragCoord.z;
+    float depth = gl_FragCoord.z*1.505;
 
-    depth *= depth*depth*depth*depth*depth*depth; // lol
+    depth *= depth*depth*depth;
 
-    col.rgb *= 1.0 - depth;
+    col.rgb *= min(1.0, max(0.0, 5.0 - depth));
 
     gl_FragColor = col;
 }

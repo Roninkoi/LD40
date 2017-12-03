@@ -1,21 +1,21 @@
 package main
 
-import "github.com/gopherjs/webgl"
+import (
+	"github.com/gopherjs/webgl"
+	"strconv"
+)
 
 /*################################
 			LEVEL 1
  ################################*/
- 
+
 type Level1 struct {
 	level []Obj
+	env   []Obj
+
 	running bool
 
 	player *Entity
-
-	room Obj
-	ramp Obj
-	ramp2 Obj
-	test Obj
 }
 
 func (l *Level1) start(w *World) {
@@ -36,17 +36,30 @@ func (l *Level1) stop() {
 func (l *Level1) load(gl *webgl.Context) {
 	l.level = nil
 
-	l.level = append(l.level, Obj{})
-	l.level[0].loadObjH(gl, "gfx/models/room0.obj", "0", false, true, "gfx/checker.png")
+	for i := 0; i < 14; i++ {
+		l.level = append(l.level, Obj{})
+		p := "gfx/models/levels/level1_" + strconv.Itoa(i) + ".obj"
+		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
+	}
 
-	l.level = append(l.level, Obj{})
-	l.level[1].loadObjH(gl, "gfx/models/room1.obj", "0", false, true, "gfx/checker.png")
+	for i := 0; i < 2; i++ {
+		l.env = append(l.env, Obj{})
+		p := "gfx/models/levels/level1_env_" + strconv.Itoa(i) + ".obj"
+		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
+	}
 }
 
 func (l *Level1) draw(r *Renderer) {
 	if l.running {
 		for i := 0; i < len(l.level); i++ {
-			l.level[i].draw(r)
+			if l.player.obj.mesh.bsc.Sub(l.level[i].mesh.bsc).Len() <= l.player.obj.mesh.bsr + l.level[i].mesh.bsr + 10.0 {
+				l.level[i].draw(r)
+			}
+		}
+		for i := 0; i < len(l.env); i++ {
+			if l.player.obj.mesh.bsc.Sub(l.env[i].mesh.bsc).Len() <= l.player.obj.mesh.bsr + l.env[i].mesh.bsr + 10.0 {
+				l.env[i].draw(r)
+			}
 		}
 	}
 }
@@ -62,7 +75,7 @@ func (l *Level1) tick(t float64) {
  ################################*/
 
 type Level2 struct {
-	level []Obj
+	level   []Obj
 	running bool
 }
 
@@ -98,7 +111,7 @@ func (l *Level2) tick(t float64) {
  ################################*/
 
 type Level3 struct {
-	level []Obj
+	level   []Obj
 	running bool
 }
 
@@ -128,13 +141,13 @@ func (l *Level3) tick(t float64) {
 
 	}
 }
- 
+
 /*################################
 			LEVEL 4
  ################################*/
 
 type Level4 struct {
-	level []Obj
+	level   []Obj
 	running bool
 }
 
@@ -164,4 +177,3 @@ func (l *Level4) tick(t float64) {
 
 	}
 }
- 

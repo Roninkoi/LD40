@@ -110,7 +110,7 @@ func (h *Hull) intersects(i *Mesh) bool {
 	return returns
 }
 
-// sphere intersection
+// sphere intersection (pretty slow)
 func (h *Hull) intersectsS(sc mgl32.Vec3, sr float32) bool {
 	returns := false
 
@@ -118,7 +118,7 @@ func (h *Hull) intersectsS(sc mgl32.Vec3, sr float32) bool {
 
 	h.cn = mgl32.Vec3{0.0, 0.0, 0.0}
 
-	for j := 0; j < (int)((float64)(len(h.mesh.faceNC))/3.0); j++ {
+	for j := 0; j < (int)((float64)(len(h.mesh.faceNC))/3.0) && !returns; j++ { // when 1, exit, might break
 		a := mgl32.Vec3{h.mesh.faceNC[j*3+0], h.mesh.faceNC[j*3+1], h.mesh.faceNC[j*3+2]}
 		b := mgl32.Vec3{sc[0], sc[1], sc[2]}
 
@@ -190,7 +190,6 @@ func (p *PhysSys) physIsect(i int, j int) {
 var epsilon float32 = 0.006 //0.006
 
 func (p *PhysSys) update() {
-
 	for i := 0; i < len(p.objs); i++ {
 		p.objs[i].isects = false
 		for j := i + 1; j < len(p.objs); j++ {

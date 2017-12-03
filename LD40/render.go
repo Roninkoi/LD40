@@ -83,7 +83,7 @@ func (r *Renderer) init(gl *webgl.Context) {
 }
 
 func (r *Renderer) clear() {
-	r.gl.ClearColor(0.5, 0.7, 1.0, 1.0)
+	r.gl.ClearColor(0.0, 0.0, 0.0, 1.0)
 	r.gl.Clear(r.gl.COLOR_BUFFER_BIT | r.gl.DEPTH_BUFFER_BIT)
 }
 
