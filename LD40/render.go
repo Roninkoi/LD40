@@ -5,7 +5,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopherjs/gopherjs/js"
 	"fmt"
-	_ "math"
+	"math"
 )
 
 const BATCH_SIZE = 16384
@@ -71,9 +71,6 @@ func (r *Renderer) init(gl *webgl.Context) {
 	r.ul_cm = gl.GetUniformLocation(r.shader.program, "c")
 	r.ul_pm = gl.GetUniformLocation(r.shader.program, "p")
 	r.ul_tex = gl.GetUniformLocation(r.shader.program, "texture")
-
-	fmt.Println(gl.GetAttribLocation(r.shader.program, "a_pos"))
-	fmt.Println(gl.GetAttribLocation(r.shader.program, "a_tex"))
 
 	gl.EnableVertexAttribArray(r.al_pos)
 	gl.EnableVertexAttribArray(r.al_tex)
@@ -152,7 +149,7 @@ func (r *Renderer) flush() {
 
 	r.c_matrix = mgl32.Ident4()
 	r.p_matrix = mgl32.Ident4()
-	r.p_matrix = mgl32.Perspective(90.0, 1280.0/750.0, 0.1, 100.0)
+	r.p_matrix = mgl32.Perspective(math.Pi*0.6, 1280.0/750.0, 0.1, 100.0)
 
 	r.c_matrix = r.c_matrix.Mul4(mgl32.HomogRotate3DX(r.camRot[0]))
 	r.c_matrix = r.c_matrix.Mul4(mgl32.HomogRotate3DY(r.camRot[1]))

@@ -8,28 +8,37 @@ import (
 func (g *Game) gameInput() {
 	g.input.getKeys()
 
+	playerMov := mgl32.Vec3{0.0, 0.0, 0.0}
+
 	if g.input.keys[A] {
-		g.renderer.camPos[0] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
-		g.renderer.camPos[2] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[0] += -0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[2] += -0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[D] {
-		g.renderer.camPos[0] -= 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
-		g.renderer.camPos[2] -= 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[0] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[2] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[W] {
-		g.renderer.camPos[0] -= 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
-		g.renderer.camPos[2] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[0] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[2] += -0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[S] {
-		g.renderer.camPos[0] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
-		g.renderer.camPos[2] -= 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[0] += -0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[2] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
 	}
 
-	if g.input.keys[R] {
-		g.renderer.camPos[1] -= 0.05
+	/*if g.input.keys[R] {
+		playerMov[1] = 0.05
 	}
 	if g.input.keys[F] {
-		g.renderer.camPos[1] += 0.05
+		playerMov[1] = -0.05
+	}*/
+
+	if playerMov.Len() > 0.0 {
+		g.world.player.obj.phys.v[0] = playerMov[0]
+		g.world.player.obj.phys.v[2] = playerMov[2]
+	} else if g.world.player.obj.isects {
+		g.world.player.obj.phys.v = g.world.player.obj.phys.v.Mul(0.9)
 	}
 
 	if g.input.keys[LEFT] {
@@ -45,8 +54,11 @@ func (g *Game) tick() {
 
 	g.ticks += 1.0
 
+	pcam := g.world.player.obj.phys.pos.Mul(-0.12)
+	g.renderer.camPos = g.renderer.camPos.Mul(0.88)
+	g.renderer.camPos = g.renderer.camPos.Add(pcam)
+
 	g.world.ticks = g.ticks
-	g.world.camPos = mgl32.Vec3{g.renderer.camPos[0], g.renderer.camPos[1], g.renderer.camPos[2]}
 	g.world.tick()
 
 	g.gameInput()

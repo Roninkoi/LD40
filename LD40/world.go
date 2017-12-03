@@ -3,72 +3,77 @@ package main
 import (
 	"github.com/gopherjs/webgl"
 	"github.com/go-gl/mathgl/mgl32"
-	"math"
 )
 
 type World struct {
 	ticks float64
-	camPos mgl32.Vec3
 
 	physSys PhysSys
 
 	player Entity
 
-	objs []Obj
+	currentLevel int
 
-	testmesh Obj
-	testmesh2 Obj
-	room Obj
+	level1 Level1
+	level2 Level2
+	level3 Level3
+	level4 Level4
 }
 
 func (w *World) draw(r *Renderer) {
-	w.testmesh.draw(r)
-	//w.testmesh2.draw(r)
-	w.room.draw(r)
-
-	for i := 0; i < 4 && w.objs != nil; i++ {
-		w.objs[i].draw(r)
-	}
+	w.level1.draw(r)
+	w.level2.draw(r)
+	w.level3.draw(r)
+	w.level4.draw(r)
 }
 
 func (w *World) tick() {
 	w.physSys.ticks = w.ticks
 	w.physSys.update()
 
-	//w.testmesh.phys.pos = mgl32.Vec3{(float32)(math.Sin(w.ticks/100.0))*3.0, 0.0, (float32)(math.Cos(w.ticks/100.0))*7.0}
-	//w.testmesh.update()
-	w.room.phys.rot[0] = 0.5*(float32)(math.Sin(w.ticks/100.0))
-	w.room.update()
+	w.player.obj.mesh.bsc = w.player.obj.phys.pos
+	w.player.obj.mesh.bsr = 0.8
+
+	w.level1.tick(w.ticks)
+	w.level2.tick(w.ticks)
+	w.level3.tick(w.ticks)
+	w.level4.tick(w.ticks)
 }
 
 func (w *World) loadWorld(gl *webgl.Context) {
-	w.room.loadObjH(gl, "gfx/models/boxi.obj", "0", false, "gfx/checker.png")
-	//w.room.phys.s = mgl32.Vec3{1.0, 1.0, 1.0}
-	w.room.phys.isStatic = true
-
-	w.testmesh.loadObjH(gl, "gfx/models/ico.obj", "0", true, "gfx/test.png")
-
-	w.testmesh2.loadObjH(gl, "gfx/models/ico.obj", "0", true, "gfx/test.png")
-
-	w.testmesh.phys.pos[2] = -2.0
-	w.testmesh2.phys.pos[2] = -3.0
-	w.testmesh2.phys.pos[1] = 2.0
-	w.testmesh.phys.v[0] = 0.02
-
 	w.physSys.gravity = mgl32.Vec3{0.0, -0.005, 0.0}
 	w.physSys.clearPhysObjs()
-	w.physSys.addPhysObj(&w.room)
-	w.physSys.addPhysObj(&w.testmesh)
 
-	w.objs = nil
-/*
-	for i := 0; i < 4; i++ {
-		w.objs = append(w.objs, Obj{})
-		w.objs[i].loadObjH(gl, "gfx/models/ico.obj", "0", true, "gfx/test.png")
+	w.player.obj.phys.init()
+	w.player.obj.hasH = false
+	w.player.obj.si = true
 
-		w.testmesh.phys.pos[2] = -3.0 + (float32)(i)
+	w.level1.load(gl)
+	w.level2.load(gl)
+	w.level3.load(gl)
+	w.level4.load(gl)
 
-		w.physSys.addPhysObj(&w.objs[i])
-	}*/
-	//w.physSys.addPhysObj(&w.testmesh2)
+	w.switchLevel(1)
+}
+
+func (w *World) switchLevel(l int) {
+	w.physSys.clearPhysObjs()
+
+	w.level1.stop()
+	w.level2.stop()
+	w.level3.stop()
+	w.level4.stop()
+
+	if l == 1 {
+		w.level1.start(w)
+	}
+	if l == 2 {
+		w.level2.start(w)
+	}
+	if l == 3 {
+		w.level3.start(w)
+	}
+	if l == 4 {
+		w.level4.start(w)
+	}
 }

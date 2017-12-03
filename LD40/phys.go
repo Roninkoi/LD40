@@ -60,6 +60,7 @@ func (h *Hull) loadHull(p string, no bool) {
 func (h *Hull) update(u *mgl32.Mat4) {
 	h.mesh.um = *u
 	h.mesh.update()
+	h.mesh.getTriSize()
 }
 
 // general intersection (slow)
@@ -115,49 +116,50 @@ func (h *Hull) intersectsS(sc mgl32.Vec3, sr float32) bool {
 
 	cni := 0
 
-	cnold := h.cn
 	h.cn = mgl32.Vec3{0.0, 0.0, 0.0}
 
-	for j := 0; j < (int)((float64)(len(h.mesh.faceNC))/3.0) && !returns; j++ {
+	for j := 0; j < (int)((float64)(len(h.mesh.faceNC))/3.0); j++ {
 		a := mgl32.Vec3{h.mesh.faceNC[j*3+0], h.mesh.faceNC[j*3+1], h.mesh.faceNC[j*3+2]}
-		an := a.Normalize()
 		b := mgl32.Vec3{sc[0], sc[1], sc[2]}
-		b = b.Add(an.Mul(sr))
-
-		c := a.Sub(b)
-		c = c.Normalize()
 
 		n := mgl32.Vec3{h.mesh.faceNormals[j*3+0], h.mesh.faceNormals[j*3+1], h.mesh.faceNormals[j*3+2]}
 
-		cdn := c.Dot(n)
+		b = b.Add(n.Mul(sr))
 
-		is := cdn < 0.0
+		c := a.Sub(b)
 
-		if h.no {
-			is = cdn > 0.0
-		}
+		if c.Len() < h.mesh.tri_size*0.5 {
+			cdn := c.Dot(n)
 
-		if is {
-			returns = true
-			cni += 1
+			if cdn < 0.0 {
+				returns = true
+				cni += 1
 
-			h.cn = h.cn.Add(n)
-			h.cn = h.cn.Mul(a.Sub(b).Len()*0.02 + 1.0)
+				h.cn = h.cn.Add(n)
+			}
 		}
 	}
 
 	if returns {
-		h.cn = h.cn.Mul(1.0 / (float32)(cni))
-	}
-	if h.cn.Len() == 0.0 {
-		h.cn = cnold
+		h.cn = h.cn.Mul(1.0/(float32)(cni))
 	}
 
 	return returns
 }
 
 func (p *PhysSys) physIsect(i int, j int) {
-	if p.objs[i].hull.intersectsS(p.objs[j].mesh.bsc, p.objs[j].mesh.bsr) {
+	isects := false
+
+	if p.objs[j].si {
+		isects = p.objs[i].hull.intersectsS(p.objs[j].mesh.bsc, p.objs[j].mesh.bsr)
+	} else {
+		isects = p.objs[i].hull.intersects(&p.objs[j].mesh)
+	}
+
+	if isects {
+		p.objs[i].isects = true
+		p.objs[j].isects = true
+
 		nv := p.objs[i].hull.cn
 
 		v := p.objs[i].phys.v.Add(p.objs[j].phys.v)
@@ -185,10 +187,12 @@ func (p *PhysSys) physIsect(i int, j int) {
 	}
 }
 
-var epsilon float32 = 0.0
+var epsilon float32 = 0.006 //0.006
 
 func (p *PhysSys) update() {
+
 	for i := 0; i < len(p.objs); i++ {
+		p.objs[i].isects = false
 		for j := i + 1; j < len(p.objs); j++ {
 			if !p.objs[i].phys.isStatic || !p.objs[j].phys.isStatic {
 				if p.objs[i].mesh.bsi(&p.objs[j].mesh) {

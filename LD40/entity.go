@@ -1,8 +1,7 @@
 package main
 
 type Entity struct {
-	mesh Mesh
-	phys Phys
+	obj Obj
 
 	health float64
 	damage float64

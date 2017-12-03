@@ -4,6 +4,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"strconv"
 	"github.com/gopherjs/webgl"
+	"fmt"
 )
 
 type Mesh struct {
@@ -23,6 +24,8 @@ type Mesh struct {
 
 	bsc mgl32.Vec3
 	bsr float32
+
+	tri_size float32
 }
 
 func parse(s string) []string {
@@ -182,6 +185,8 @@ func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 	m.vertexNormals = append(m.vertexNormals, filledArray(len(m.vertexData), 0.0)...)
 
 	m.update()
+
+	m.getTriSize()
 }
 
 func filledArray(l int, v float32) []float32 {
@@ -251,7 +256,7 @@ func (m *Mesh) update() {
 func (m *Mesh) bsi(n *Mesh) bool {
 	intersects := false
 
-	if m.bsc.Sub(n.bsc).Len() < m.bsr + n.bsr {
+	if m.bsc.Sub(n.bsc).Len() <= m.bsr + n.bsr {
 		intersects = true
 	}
 
@@ -264,6 +269,7 @@ func (m *Mesh) collideMesh(n *Mesh) {
 
 func (m *Mesh) getBoundingSphere() {
 	vn := 0
+	m.bsr = 0.0
 	for i := 0; i < len(m.vertexData); i += 4 {
 		vp := mgl32.Vec3{m.vertexData[i], m.vertexData[i+1], m.vertexData[i+2]}
 		m.bsc = m.bsc.Add(vp)
@@ -274,10 +280,37 @@ func (m *Mesh) getBoundingSphere() {
 	for i := 0; i < len(m.vertexData); i += 4 {
 		vp := mgl32.Vec3{m.vertexData[i], m.vertexData[i+1], m.vertexData[i+2]}
 		nr := vp.Sub(m.bsc).Len()
-		if nr > 0.0 {
+		if nr > m.bsr {
 			m.bsr = nr
 		}
 	}
+}
+
+func (m *Mesh) getTriSize() {
+	m.tri_size = 0.0
+	for i := 0; i < len(m.indexData)/3.0; i++ {
+		v0 := mgl32.Vec3{m.vertexData[m.indexData[i*3 + 0]*4+0],m.vertexData[m.indexData[i*3 + 0]*4+1], m.vertexData[m.indexData[i*3 + 0]*4+2]}
+		v1 := mgl32.Vec3{m.vertexData[m.indexData[i*3 + 1]*4+0],m.vertexData[m.indexData[i*3 + 1]*4+1], m.vertexData[m.indexData[i*3 + 1]*4+2]}
+		v2 := mgl32.Vec3{m.vertexData[m.indexData[i*3 + 2]*4+0],m.vertexData[m.indexData[i*3 + 2]*4+1], m.vertexData[m.indexData[i*3 + 2]*4+2]}
+
+		vl := (float32)(0.0)
+
+		if v0.Sub(v1).Len() > vl {
+			vl = v0.Sub(v1).Len()
+		}
+		if v1.Sub(v2).Len() > vl {
+			vl = v1.Sub(v2).Len()
+		}
+		if v2.Sub(v0).Len() > vl {
+			vl = v2.Sub(v0).Len()
+		}
+
+		if vl > m.tri_size {
+			m.tri_size = vl
+		}
+	}
+	fmt.Print("tri size ")
+	fmt.Println(m.tri_size)
 }
 
 func (m *Mesh) render(r *Renderer) {

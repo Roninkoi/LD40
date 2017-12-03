@@ -12,12 +12,17 @@ type Obj struct {
 	hasH bool
 	sameH bool
 
+	isects bool
+
+	si bool // sphere intersection
+
 	phys Phys
 }
 
 func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {
 	o.mesh.loadMesh(gl, p, t)
 
+	o.si = false
 	o.hasH = false
 	o.sameH = false
 
@@ -26,9 +31,10 @@ func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {
 	o.update()
 }
 
-func (o *Obj) loadObjH(gl *webgl.Context, p string, h string, no bool, t string) {
+func (o *Obj) loadObjH(gl *webgl.Context, p string, h string, no bool, s bool, t string) {
 	o.mesh.loadMesh(gl, p, t)
 
+	o.si = false
 	o.hasH = false
 
 	if h == "0" {
@@ -44,6 +50,12 @@ func (o *Obj) loadObjH(gl *webgl.Context, p string, h string, no bool, t string)
 	}
 
 	o.phys.init()
+
+	o.phys.isStatic = s
+
+	if !s {
+		o.phys.v[1] = -0.01 // kick
+	}
 
 	o.update()
 }
@@ -78,7 +90,7 @@ func (o *Obj) update() {
 
 	//hum = hum.Mul4(mgl32.Scale3D(o.phys.s[0], o.phys.s[1], o.phys.s[2]))
 
-	//hum = hum.Mul4(mgl32.HomogRotate3DX(o.phys.rot[0]))
+	hum = hum.Mul4(mgl32.HomogRotate3DX(o.phys.rot[0]))
 	hum = hum.Mul4(mgl32.HomogRotate3DY(o.phys.rot[1]))
 	//hum = hum.Mul4(mgl32.HomogRotate3DZ(o.phys.rot[2]))
 
