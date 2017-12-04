@@ -23,10 +23,13 @@ type Entity struct {
 	beetles int
 
 	attacking bool
+
+	removed bool
 }
 
 func (e *Entity) loadEnemy(gl *webgl.Context, p string) {
 	e.sprite.loadSprite(gl, p)
+	e.removed = false
 }
 
 func (e *Entity) setEnemy(x float32, y float32, z float32) {
@@ -52,6 +55,9 @@ func (e *Entity) tickEnemy(playerPos mgl32.Vec3, camY float32, attacking bool) {
 	movVec := c.Normalize().Mul(e.spd)
 	if c.Len() > 1.0 {
 		e.obj.phys.pos = e.obj.phys.pos.Add(movVec)
+		e.attacking = false
+	} else {
+		e.attacking = true
 	}
 	e.obj.phys.pos[1] += movVec[1]
 

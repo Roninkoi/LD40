@@ -35,6 +35,12 @@ type Game struct {
 	gui GUI
 
 	aud Audio
+
+	win bool
+	lose bool
+	start bool
+
+	stopRender bool
 }
 
 func (g *Game) Start() {
@@ -65,6 +71,12 @@ func (g *Game) Start() {
 	g.input.init()
 	g.input.keyHandler()
 
+	g.gui.loadGUI(g.gl)
+
+	g.start = true
+	g.win = false
+	g.lose = false
+
 	g.main(nil)
 }
 
@@ -88,23 +100,27 @@ func (g *Game) main(ftime *js.Object) {
 
 		fmt.Print("player pos: ")
 		fmt.Println(g.world.player.obj.phys.pos)
-
+/*
 		fmt.Print(" c: ")
 		fmt.Print(g.world.player.coins)
 		fmt.Print(" g: ")
 		fmt.Print(g.world.player.gems)
 		fmt.Print(" b: ")
-		fmt.Println(g.world.player.beetles)
+		fmt.Println(g.world.player.beetles)*/
 
 		g.render_time = 0
 		g.tick_time = 0
 
 		g.fps_ticks = 0
+
+		g.world.seconds += 1
 	}
 
 	g.tick()
 
-	g.render()
+	if !g.stopRender {
+		g.render()
+	}
 
 	for timeNow() - g.time < 16.0 {
 		// wait around to sync fps on fast screens

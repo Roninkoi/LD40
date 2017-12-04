@@ -21,6 +21,8 @@ type Obj struct {
 	phys Phys
 
 	obj_type int
+
+	removed bool
 }
 
 func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {
@@ -29,6 +31,7 @@ func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {
 	o.si = false
 	o.hasH = false
 	o.sameH = false
+	o.removed = false
 
 	o.phys.init()
 
@@ -40,6 +43,7 @@ func (o *Obj) loadObjH(gl *webgl.Context, p string, h string, no bool, s bool, t
 
 	o.si = false
 	o.hasH = false
+	o.removed = false
 
 	if h == "0" {
 		o.hull.loadHull(p, no)

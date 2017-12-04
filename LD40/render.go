@@ -47,6 +47,8 @@ type Renderer struct {
 
 	draws int
 
+	disableVT bool
+
 	vertexNum int
 	indexNum  int
 }
@@ -159,6 +161,10 @@ func (r *Renderer) flush() {
 
 	r.c_matrix = r.c_matrix.Mul4(mgl32.Translate3D(r.camPos[0], r.camPos[1], r.camPos[2]))
 
+	if r.disableVT {
+		r.c_matrix = mgl32.Ident4()
+	}
+
 	r.gl.Viewport(0, 0, 1280, 750)
 
 	r.gl.UseProgram(r.shader.program)
@@ -212,6 +218,24 @@ func (g *Game) render() {
 	g.world.draw(&g.renderer)
 
 	g.renderer.cflush()
+
+	g.renderer.disableVT = true
+
+	if g.start {
+		g.gui.drawStartScreen(&g.renderer)
+	} else if g.win {
+		g.gui.drawWinScreen(&g.renderer)
+		g.stopRender = true
+	} else if g.lose {
+		g.gui.drawLoseScreen(&g.renderer)
+		g.stopRender = true
+	} else {
+		g.gui.drawGUI(&g.renderer)
+	}
+
+	g.renderer.cflush()
+
+	g.renderer.disableVT = false
 
 	if (int)(g.ticks)%60 == 0 {
 		fmt.Print("draws ")

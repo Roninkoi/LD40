@@ -26,6 +26,8 @@ type Input struct {
 	keyobjs [256]*js.Object
 
 	space_pressed bool
+	right_pressed bool
+	left_pressed bool
 }
 
 func (i *Input) init() {
