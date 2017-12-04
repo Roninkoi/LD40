@@ -27,12 +27,15 @@ func (g *Game) gameInput() {
 		playerMov[2] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
 	}
 
-	/*if g.input.keys[R] {
-		playerMov[1] = 0.05
+	if g.input.keys[SPACE] {
+		if g.input.space_pressed {
+			g.input.space_pressed = false
+
+			g.world.player.attacking = true
+		}
+	} else {
+		g.input.space_pressed = true
 	}
-	if g.input.keys[F] {
-		playerMov[1] = -0.05
-	}*/
 
 	if playerMov.Len() > 0.0 {
 		g.world.player.obj.phys.v[0] = playerMov[0]
@@ -59,10 +62,10 @@ func (g *Game) tick() {
 	g.renderer.camPos = g.renderer.camPos.Add(pcam)
 	g.renderer.camRot = g.world.player.obj.phys.rot
 
+	g.gameInput()
+
 	g.world.ticks = g.ticks
 	g.world.tick()
-
-	g.gameInput()
 
 	g.tick_time += timeNow() - tickdelta
 }

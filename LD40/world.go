@@ -14,9 +14,9 @@ type World struct {
 
 	currentLevel int
 
-	level1 Level1
-	level2 Level2
-	level3 Level3
+	level1 Level
+	level2 Level
+	level3 Level
 }
 
 func (w *World) draw(r *Renderer) {
@@ -45,9 +45,9 @@ func (w *World) loadWorld(gl *webgl.Context) {
 	w.player.obj.hasH = false
 	w.player.obj.si = true
 
-	w.level1.load(gl)
-	w.level2.load(gl)
-	w.level3.load(gl)
+	w.level1.load1(gl)
+	//w.level2.load2(gl)
+	//w.level3.load3(gl)
 
 	w.switchLevel(1)
 }

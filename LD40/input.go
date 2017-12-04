@@ -10,6 +10,8 @@ const (
 	RIGHT = 39
 	DOWN  = 40
 
+	SPACE = 32
+
 	A = 65
 	D = 68
 	F = 70
@@ -22,6 +24,8 @@ const (
 type Input struct {
 	keys [256]bool
 	keyobjs [256]*js.Object
+
+	space_pressed bool
 }
 
 func (i *Input) init() {

@@ -14,9 +14,13 @@ type Obj struct {
 
 	isects bool
 
+	collides bool
+
 	si bool // sphere intersection
 
 	phys Phys
+
+	obj_type int
 }
 
 func (o *Obj) loadObj(gl *webgl.Context, p string, t string) {

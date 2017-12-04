@@ -31,6 +31,10 @@ type Game struct {
 	world World
 
 	input Input
+
+	gui GUI
+
+	aud Audio
 }
 
 func (g *Game) Start() {
@@ -84,6 +88,13 @@ func (g *Game) main(ftime *js.Object) {
 
 		fmt.Print("player pos: ")
 		fmt.Println(g.world.player.obj.phys.pos)
+
+		fmt.Print(" c: ")
+		fmt.Print(g.world.player.coins)
+		fmt.Print(" g: ")
+		fmt.Print(g.world.player.gems)
+		fmt.Print(" b: ")
+		fmt.Println(g.world.player.beetles)
 
 		g.render_time = 0
 		g.tick_time = 0

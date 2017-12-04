@@ -7,71 +7,7 @@ import (
 	"math"
 )
 
-/*################################
-			LEVEL 1
- ################################*/
-
-func addEnemy(t int, x float32, y float32, z float32) Entity {
-	newEnemy := Entity{}
-	if t == 0 {
-		newEnemy.loadEnemy(nil, "nil")
-		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
-			mgl32.Vec4{1.0, 133.0 + 40.0*0.0, 21.0, 38.0},
-			mgl32.Vec4{24.0, 133.0 + 40.0*0.0, 21.0, 38.0},
-			mgl32.Vec4{47.0, 133.0 + 40.0*0.0, 21.0, 38.0},
-			mgl32.Vec4{70.0, 133.0 + 40.0*0.0, 21.0, 38.0}})
-		newEnemy.setEnemy(x, y, z)
-		newEnemy.damage = 20.0
-		newEnemy.spd = 0.02
-	}
-	if t == 1 {
-		newEnemy.loadEnemy(nil, "nil")
-		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
-			mgl32.Vec4{1.0, 133.0 + 40.0*1.0, 21.0, 38.0},
-			mgl32.Vec4{24.0, 133.0 + 40.0*1.0, 21.0, 38.0},
-			mgl32.Vec4{47.0, 133.0 + 40.0*1.0, 21.0, 38.0},
-			mgl32.Vec4{70.0, 133.0 + 40.0*1.0, 21.0, 38.0}})
-		newEnemy.setEnemy(x, y, z)
-		newEnemy.damage = 10.0
-		newEnemy.spd = 0.04
-	}
-	if t == 2 {
-		newEnemy.loadEnemy(nil, "nil")
-		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
-			mgl32.Vec4{1.0, 133.0 + 40.0*2.0, 21.0, 38.0},
-			mgl32.Vec4{24.0, 133.0 + 40.0*2.0, 21.0, 38.0},
-			mgl32.Vec4{47.0, 133.0 + 40.0*2.0, 21.0, 38.0},
-			mgl32.Vec4{70.0, 133.0 + 40.0*2.0, 21.0, 38.0}})
-		newEnemy.setEnemy(x, y, z)
-		newEnemy.damage = 40.0
-		newEnemy.spd = 0.01
-	}
-	return newEnemy
-}
-
-func addLoot(t int, x float32, y float32, z float32) Obj {
-	newObj := Obj{}
-	if t == 0 {
-		newObj.loadObj(nil, "gfx/models/coin.obj", "nil")
-	}
-	if t == 1 {
-		newObj.loadObj(nil, "gfx/models/gem.obj", "nil")
-	}
-	if t == 2 {
-		newObj.loadObj(nil, "gfx/models/beetle.obj", "nil")
-	}
-	newObj.phys.pos = mgl32.Vec3{x, y, z}
-	return newObj
-}
-
-func (o *Obj) tickLoot(playerPos mgl32.Vec3) {
-	o.phys.rot[1] += 0.04
-	o.phys.pos[1] += (float32)(math.Sin((float64)(o.phys.rot[1]))) * 0.005
-
-	o.update()
-}
-
-type Level1 struct {
+type Level struct {
 	level []Obj
 	env   []Obj
 
@@ -86,7 +22,7 @@ type Level1 struct {
 	ticks int
 }
 
-func (l *Level1) start(w *World) {
+func (l *Level) start(w *World) {
 	l.running = true
 	l.player = &w.player
 
@@ -97,48 +33,27 @@ func (l *Level1) start(w *World) {
 	}
 }
 
-func (l *Level1) stop() {
+func (l *Level) stop() {
 	l.running = false
 }
 
-func (l *Level1) addEnemy(t int, x float32, y float32, z float32) {
+func (l *Level) addEnemy(t int, x float32, y float32, z float32) {
 	l.enemies = append(l.enemies, addEnemy(t, x, y, z))
 }
 
-func (l *Level1) addLoot(t int, x float32, y float32, z float32) {
+func (l *Level) addLoot(t int, x float32, y float32, z float32) {
 	l.loot = append(l.loot, addLoot(t, x, y-0.3, z))
 }
 
-func (l *Level1) load(gl *webgl.Context) {
-	l.level = nil
-
-	for i := 0; i < 14; i++ {
-		l.level = append(l.level, Obj{})
-		p := "gfx/models/levels/level1_" + strconv.Itoa(i) + ".obj"
-		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
-	}
-
-	for i := 0; i < 2; i++ {
-		l.env = append(l.env, Obj{})
-		p := "gfx/models/levels/level1_env_" + strconv.Itoa(i) + ".obj"
-		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
-	}
-
-	l.addEnemy(1, 0.0, 0.0, 0.0)
-	l.addEnemy(0, 0.1, 0.0, 0.0)
-	l.addEnemy(0, 0.2, 0.0, 0.0)
-	l.addEnemy(0, 0.3, 0.0, 0.0)
-	l.addEnemy(0, 0.4, 0.0, 0.0)
-	l.addEnemy(0, 0.5, 0.0, 0.0)
-	l.addEnemy(0, 0.6, 0.0, 0.0)
-	l.addEnemy(0, 0.7, 0.0, 0.0)
-	l.addEnemy(2, 2.0, 0.0, 0.0)
-	l.addLoot(0, 2.0, -0.3, 0.0)
-	l.addLoot(1, 2.0, -0.3, 2.0)
-	l.addLoot(2, 2.0, -0.3, 4.0)
+func (l *Level) removeEnemy(i int) {
+	l.enemies = append(l.enemies[:i], l.enemies[i+1:]...)
 }
 
-func (l *Level1) draw(r *Renderer) {
+func (l *Level) removeLoot(i int) {
+	l.loot = append(l.loot[:i], l.loot[i+1:]...)
+}
+
+func (l *Level) draw(r *Renderer) {
 	if l.running {
 		for i := 0; i < len(l.level); i++ {
 			if l.player.obj.mesh.bsc.Sub(l.level[i].mesh.bsc).Len() <= l.player.obj.mesh.bsr+l.level[i].mesh.bsr+10.0 {
@@ -165,7 +80,7 @@ func (l *Level1) draw(r *Renderer) {
 	}
 }
 
-func (l *Level1) tick(t float64) {
+func (l *Level) tick(t float64) {
 	l.ticks += 1
 	if l.running {
 		if l.ticks%30 == 0 {
@@ -180,89 +95,188 @@ func (l *Level1) tick(t float64) {
 				}
 			}
 		}
-		if (l.ticks%2 == 0) {
+		if l.ticks%2 == 0 {
 			for i := 0; i < len(l.enemies); i++ {
 				if l.player.obj.mesh.bsc.Sub(l.enemies[i].obj.phys.pos).Len() <= 7.0 {
-					l.enemies[i].tickEnemy(l.player.obj.phys.pos, l.player.obj.phys.rot[1])
+					l.enemies[i].tickEnemy(l.player.obj.phys.pos, l.player.obj.phys.rot[1], l.player.attacking)
 				}
 			}
+			for i := 0; i < len(l.enemies); i++ {
+				if l.enemies[i].health == 0.0 {
+					l.removeEnemy(i)
+				}
+			}
+			l.player.attacking = false
 			for i := 0; i < len(l.loot); i++ {
 				if l.player.obj.mesh.bsc.Sub(l.loot[i].phys.pos).Len() <= 20.0 {
 					l.loot[i].tickLoot(l.player.obj.phys.pos)
+				}
+				if l.loot[i].collides {
+					l.loot[i].lootPickup(l.player)
+
+					l.removeLoot(i)
 				}
 			}
 		}
 	}
 }
 
-/*################################
-			LEVEL 2
- ################################*/
-
-type Level2 struct {
-	level   []Obj
-	running bool
+func addEnemy(t int, x float32, y float32, z float32) Entity {
+	newEnemy := Entity{}
+	if t == 0 {
+		newEnemy.loadEnemy(nil, "nil")
+		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
+			mgl32.Vec4{1.0, 133.0 + 40.0*0.0, 21.0, 38.0},
+			mgl32.Vec4{24.0, 133.0 + 40.0*0.0, 21.0, 38.0},
+			mgl32.Vec4{47.0, 133.0 + 40.0*0.0, 21.0, 38.0},
+			mgl32.Vec4{70.0, 133.0 + 40.0*0.0, 21.0, 38.0}})
+		newEnemy.setEnemy(x, y, z)
+		newEnemy.damage = 20.0
+		newEnemy.spd = 0.02
+		newEnemy.health = 120.0
+	}
+	if t == 1 {
+		newEnemy.loadEnemy(nil, "nil")
+		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
+			mgl32.Vec4{1.0, 133.0 + 40.0*1.0, 21.0, 38.0},
+			mgl32.Vec4{24.0, 133.0 + 40.0*1.0, 21.0, 38.0},
+			mgl32.Vec4{47.0, 133.0 + 40.0*1.0, 21.0, 38.0},
+			mgl32.Vec4{70.0, 133.0 + 40.0*1.0, 21.0, 38.0}})
+		newEnemy.setEnemy(x, y, z)
+		newEnemy.damage = 10.0
+		newEnemy.spd = 0.04
+		newEnemy.health = 60.0
+	}
+	if t == 2 {
+		newEnemy.loadEnemy(nil, "nil")
+		newEnemy.sprite.animLoad([]int{0, 1, 0, 2}, 250.0, []mgl32.Vec4{
+			mgl32.Vec4{1.0, 133.0 + 40.0*2.0, 21.0, 38.0},
+			mgl32.Vec4{24.0, 133.0 + 40.0*2.0, 21.0, 38.0},
+			mgl32.Vec4{47.0, 133.0 + 40.0*2.0, 21.0, 38.0},
+			mgl32.Vec4{70.0, 133.0 + 40.0*2.0, 21.0, 38.0}})
+		newEnemy.setEnemy(x, y, z)
+		newEnemy.damage = 40.0
+		newEnemy.spd = 0.01
+		newEnemy.health = 300.0
+	}
+	return newEnemy
 }
 
-func (l *Level2) start(w *World) {
-	l.running = true
-	for i := 0; i < len(l.level); i++ {
-		w.physSys.addPhysObj(&l.level[i])
+func addLoot(t int, x float32, y float32, z float32) Obj {
+	newObj := Obj{}
+	if t == 0 {
+		newObj.loadObj(nil, "gfx/models/coin.obj", "nil")
+	}
+	if t == 1 {
+		newObj.loadObj(nil, "gfx/models/gem.obj", "nil")
+	}
+	if t == 2 {
+		newObj.loadObj(nil, "gfx/models/beetle.obj", "nil")
+	}
+	newObj.phys.pos = mgl32.Vec3{x, y, z}
+	newObj.obj_type = t
+	return newObj
+}
+
+func (o *Obj) tickLoot(playerPos mgl32.Vec3) {
+	o.phys.rot[1] += 0.04
+	o.phys.pos[1] += (float32)(math.Sin((float64)(o.phys.rot[1]))) * 0.005
+
+	o.update()
+
+	c := o.phys.pos.Sub(playerPos).Len()
+
+	if c < 0.5 {
+		o.collides = true
 	}
 }
 
-func (l *Level2) stop() {
-	l.running = false
-}
-
-func (l *Level2) load(gl *webgl.Context) {
-
-}
-
-func (l *Level2) draw(r *Renderer) {
-	if l.running {
-
+func (o *Obj) lootPickup(p *Entity) {
+	if o.obj_type == 0 {
+		p.coins += 1
+	}
+	if o.obj_type == 1 {
+		p.gems += 1
+	}
+	if o.obj_type == 2 {
+		p.beetles += 1
 	}
 }
 
-func (l *Level2) tick(t float64) {
-	if l.running {
+func (l *Level) load1(gl *webgl.Context) {
+	l.level = nil
 
+	for i := 0; i < 14; i++ {
+		l.level = append(l.level, Obj{})
+		p := "gfx/models/levels/level1_" + strconv.Itoa(i) + ".obj"
+		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
 	}
-}
 
-/*################################
-			LEVEL 3
- ################################*/
-
-type Level3 struct {
-	level   []Obj
-	running bool
-}
-
-func (l *Level3) start(w *World) {
-	l.running = true
-	for i := 0; i < len(l.level); i++ {
-		w.physSys.addPhysObj(&l.level[i])
+	for i := 0; i < 2; i++ {
+		l.env = append(l.env, Obj{})
+		p := "gfx/models/levels/level1_env_" + strconv.Itoa(i) + ".obj"
+		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
 	}
+
+	l.addEnemy(1, 0.0, 0.0, 0.0)
+	l.addEnemy(0, 0.1, 0.0, 0.0)
+	l.addEnemy(0, 0.2, 0.0, 0.0)
+	l.addEnemy(0, 0.3, 0.0, 0.0)
+	l.addEnemy(0, 0.4, 0.0, 0.0)
+	l.addEnemy(0, 0.5, 0.0, 0.0)
+	l.addEnemy(0, 0.6, 0.0, 0.0)
+	l.addEnemy(0, 0.7, 0.0, 0.0)
+	l.addEnemy(2, 2.0, 0.0, 0.0)
+
+	l.addLoot(0, 2.0, -0.3, 0.0)
+	l.addLoot(1, 2.0, -0.3, 2.0)
+	l.addLoot(2, 2.0, -0.3, 4.0)
 }
 
-func (l *Level3) stop() {
-	l.running = false
-}
+func (l *Level) load2(gl *webgl.Context) {
+	l.level = nil
 
-func (l *Level3) load(gl *webgl.Context) {
-
-}
-
-func (l *Level3) draw(r *Renderer) {
-	if l.running {
-
+	for i := 0; i < 0; i++ {
+		l.level = append(l.level, Obj{})
+		p := "gfx/models/levels/level2_" + strconv.Itoa(i) + ".obj"
+		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
 	}
+
+	for i := 0; i < 0; i++ {
+		l.env = append(l.env, Obj{})
+		p := "gfx/models/levels/level2_env_" + strconv.Itoa(i) + ".obj"
+		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
+	}
+
+	l.addEnemy(1, 0.0, 0.0, 0.0)
+	l.addEnemy(0, 0.1, 0.0, 0.0)
+	l.addEnemy(2, 2.0, 0.0, 0.0)
+
+	l.addLoot(0, 2.0, -0.3, 0.0)
+	l.addLoot(1, 2.0, -0.3, 2.0)
+	l.addLoot(2, 2.0, -0.3, 4.0)
 }
 
-func (l *Level3) tick(t float64) {
-	if l.running {
+func (l *Level) load3(gl *webgl.Context) {
+	l.level = nil
 
+	for i := 0; i < 0; i++ {
+		l.level = append(l.level, Obj{})
+		p := "gfx/models/levels/level3_" + strconv.Itoa(i) + ".obj"
+		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
 	}
+
+	for i := 0; i < 0; i++ {
+		l.env = append(l.env, Obj{})
+		p := "gfx/models/levels/level3_env_" + strconv.Itoa(i) + ".obj"
+		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
+	}
+
+	l.addEnemy(1, 0.0, 0.0, 0.0)
+	l.addEnemy(0, 0.1, 0.0, 0.0)
+	l.addEnemy(2, 2.0, 0.0, 0.0)
+
+	l.addLoot(0, 2.0, -0.3, 0.0)
+	l.addLoot(1, 2.0, -0.3, 2.0)
+	l.addLoot(2, 2.0, -0.3, 4.0)
 }
