@@ -21,5 +21,10 @@ void main() {
 
     col.rgb *= min(1.0, max(0.0, 5.0 - depth));
 
-    gl_FragColor = col;
+    if (col.a > 0.0) {
+        gl_FragColor = col;
+    }
+    else {
+        discard;
+    }
 }

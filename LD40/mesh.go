@@ -83,6 +83,8 @@ func (m *Mesh) clearMesh() {
 func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 	if t != "nil" {
 		m.tex.loadTexture(gl, t)
+	} else {
+		m.tex.p = t
 	}
 
 	s := readFile(p)

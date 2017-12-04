@@ -48,7 +48,7 @@ type Renderer struct {
 	draws int
 
 	vertexNum int
-	indexNum int
+	indexNum  int
 }
 
 func (r *Renderer) init(gl *webgl.Context) {
@@ -118,11 +118,13 @@ func (r *Renderer) batchAdd(va *[]float32, ta *[]float32, ia *[]uint16) {
 }
 
 func (r *Renderer) draw(t *Texture, va *[]float32, ta *[]float32, ia *[]uint16) {
-	if t.p != r.tex.p {
+	if t.p != r.tex.p && t.p != "nil" {
 		r.cflush()
 	}
 
-	r.tex = *t
+	if t.p != "nil" {
+		r.tex = *t
+	}
 	r.u_matrix = mgl32.Ident4()
 
 	r.batchAdd(va, ta, ia)

@@ -17,14 +17,12 @@ type World struct {
 	level1 Level1
 	level2 Level2
 	level3 Level3
-	level4 Level4
 }
 
 func (w *World) draw(r *Renderer) {
 	w.level1.draw(r)
 	w.level2.draw(r)
 	w.level3.draw(r)
-	w.level4.draw(r)
 }
 
 func (w *World) tick() {
@@ -37,7 +35,6 @@ func (w *World) tick() {
 	w.level1.tick(w.ticks)
 	w.level2.tick(w.ticks)
 	w.level3.tick(w.ticks)
-	w.level4.tick(w.ticks)
 }
 
 func (w *World) loadWorld(gl *webgl.Context) {
@@ -51,7 +48,6 @@ func (w *World) loadWorld(gl *webgl.Context) {
 	w.level1.load(gl)
 	w.level2.load(gl)
 	w.level3.load(gl)
-	w.level4.load(gl)
 
 	w.switchLevel(1)
 }
@@ -62,7 +58,6 @@ func (w *World) switchLevel(l int) {
 	w.level1.stop()
 	w.level2.stop()
 	w.level3.stop()
-	w.level4.stop()
 
 	if l == 1 {
 		w.level1.start(w)
@@ -72,8 +67,5 @@ func (w *World) switchLevel(l int) {
 	}
 	if l == 3 {
 		w.level3.start(w)
-	}
-	if l == 4 {
-		w.level4.start(w)
 	}
 }

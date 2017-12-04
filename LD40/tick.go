@@ -42,10 +42,10 @@ func (g *Game) gameInput() {
 	}
 
 	if g.input.keys[LEFT] {
-		g.renderer.camRot[1] -= 0.05
+		g.world.player.obj.phys.rot[1] -= 0.05
 	}
 	if g.input.keys[RIGHT] {
-		g.renderer.camRot[1] += 0.05
+		g.world.player.obj.phys.rot[1] += 0.05
 	}
 }
 
@@ -57,6 +57,7 @@ func (g *Game) tick() {
 	pcam := g.world.player.obj.phys.pos.Mul(-0.12)
 	g.renderer.camPos = g.renderer.camPos.Mul(0.88)
 	g.renderer.camPos = g.renderer.camPos.Add(pcam)
+	g.renderer.camRot = g.world.player.obj.phys.rot
 
 	g.world.ticks = g.ticks
 	g.world.tick()

@@ -82,6 +82,9 @@ func (g *Game) main(ftime *js.Object) {
 			", rt: ", g.render_time/(float64)(g.fps_ticks), " ms, tt: ",
 				g.tick_time/(float64)(g.fps_ticks), " ms\n")
 
+		fmt.Print("player pos: ")
+		fmt.Println(g.world.player.obj.phys.pos)
+
 		g.render_time = 0
 		g.tick_time = 0
 
