@@ -1,0 +1,12 @@
+# Blender v2.79 (sub 0) OBJ File: 'level0env.blend'
+# www.blender.org
+mtllib enemy_0.mtl
+o enemy0_Plane.031
+v 14.535353 1.390076 0.456938
+v 20.839886 1.390076 -0.677067
+v -0.018278 1.001298 11.521344
+v 20.893730 1.390076 10.145045
+vn 0.0135 -0.9999 -0.0088
+usemtl None
+s off
+f 1//1 2//1 4//1 3//1

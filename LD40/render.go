@@ -80,8 +80,6 @@ func (r *Renderer) init(gl *webgl.Context) {
 	r.vertexBuffer = gl.CreateBuffer()
 	r.texBuffer = gl.CreateBuffer()
 	r.indexBuffer = gl.CreateBuffer()
-
-	r.tex.loadTexture(gl, "gfx/test.png")
 }
 
 func (r *Renderer) clear() {

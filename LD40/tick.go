@@ -11,20 +11,20 @@ func (g *Game) gameInput() {
 	playerMov := mgl32.Vec3{0.0, 0.0, 0.0}
 
 	if g.input.keys[A] {
-		playerMov[0] += -0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
-		playerMov[2] += -0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[0] += -g.world.player.spd*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[2] += -g.world.player.spd*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[D] {
-		playerMov[0] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
-		playerMov[2] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[0] += g.world.player.spd*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[2] += g.world.player.spd*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[W] {
-		playerMov[0] += 0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
-		playerMov[2] += -0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[0] += g.world.player.spd*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[2] += -g.world.player.spd*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
 	}
 	if g.input.keys[S] {
-		playerMov[0] += -0.05*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
-		playerMov[2] += 0.05*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
+		playerMov[0] += -g.world.player.spd*(float32)(math.Sin((float64)(g.renderer.camRot[1])))
+		playerMov[2] += g.world.player.spd*(float32)(math.Cos((float64)(g.renderer.camRot[1])))
 	}
 
 	if g.input.keys[SPACE] {
@@ -77,8 +77,8 @@ func (g *Game) gameInput() {
 			if (g.win || g.lose) {
 				next := g.world.currentLevel + 1
 
-				if next >= 3 {
-					next = 3
+				if next >= 2 {
+					next = 2
 				}
 				g.world.switchLevel(next)
 			}
@@ -121,6 +121,11 @@ func (g *Game) tick() {
 
 	if g.start {
 		g.renderer.camRot[1] = (float32)(math.Sin(g.ticks/100.0))
+		g.lose = false
+		g.win = false
+		g.world.player.health = 100.0
+		g.world.seconds = 0
+		g.world.rage = g.world.ragelimit
 	} else {
 		g.renderer.camRot = g.world.player.obj.phys.rot
 

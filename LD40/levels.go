@@ -250,96 +250,85 @@ func (o *Obj) lootPickup(p *Entity) {
 	}
 }
 
+func zeroes(i int) string {
+	returns := ""
+
+	num := 0
+	if i > 0 {
+		num = 2 - (int)(math.Log10((float64)(i)))
+	} else {
+		num = 2
+	}
+	for j := 0; j < num; j++ {
+		returns += "0"
+	}
+	return returns
+}
+
+func (l *Level) loadLevel(gl *webgl.Context, t int, n int) {
+	for i := 0; i < n; i++ {
+		l.level = append(l.level, Obj{})
+		p := "gfx/models/level" + strconv.Itoa(t) + "/level." + zeroes(i) + strconv.Itoa(i) + ".obj"
+		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
+	}
+}
+
+func (l *Level) loadEnv(gl *webgl.Context, t int, n int) {
+	for i := 0; i < n; i++ {
+		l.env = append(l.env, Obj{})
+		p := "gfx/models/level" + strconv.Itoa(t) +"/level_env." + zeroes(i) + strconv.Itoa(i) + ".obj"
+		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
+	}
+}
+
+func (l *Level) loadEnemies(t int, y int) {
+	loaderMesh := Mesh{}
+	loaderMesh.loadVerts("gfx/models/level" + strconv.Itoa(t) + "/enemy_" + strconv.Itoa(y) + ".obj")
+
+	for v := 0; v < len(loaderMesh.rawVertexData)/4.0; v++ {
+		l.addEnemy(y, loaderMesh.rawVertexData[v*4.0+0], loaderMesh.rawVertexData[v*4.0+1], loaderMesh.rawVertexData[v*4.0+2])
+	}
+}
+
+func (l *Level) loadLoot(t int, y int) {
+	loaderMesh := Mesh{}
+	loaderMesh.loadVerts("gfx/models/level" + strconv.Itoa(t) + "/loot_" + strconv.Itoa(y) + ".obj")
+
+	for v := 0; v < len(loaderMesh.rawVertexData)/4.0; v++ {
+		l.addLoot(y, loaderMesh.rawVertexData[v*4.0+0], loaderMesh.rawVertexData[v*4.0+1], loaderMesh.rawVertexData[v*4.0+2])
+	}
+}
+
 func (l *Level) load1(gl *webgl.Context) {
 	l.level = nil
 
 	l.exit = mgl32.Vec3{0.0, -1.0, 25.0}
 
-	for i := 0; i < 14; i++ {
-		l.level = append(l.level, Obj{})
-		p := "gfx/models/level1/level_" + strconv.Itoa(i) + ".obj"
-		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
-	}
+	l.loadLevel(gl, 1, 14)
 
-	for i := 0; i < 5; i++ {
-		l.env = append(l.env, Obj{})
-		p := "gfx/models/level1/level_env_" + strconv.Itoa(i) + ".obj"
-		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
-	}
+	l.loadEnv(gl, 1, 5)
 
-	l.addEnemy(0, 0.0, 1.0, 13.8)
-	l.addEnemy(0, 15.7, 1.0, -0.8)
-	l.addEnemy(0, 16.9, 1.0, 0.8)
-	l.addEnemy(0, 20.7, 1.0, -0.8)
+	l.loadLoot(1, 0)
+	l.loadLoot(1, 1)
+	l.loadLoot(1, 2)
 
-	l.addEnemy(1, 20.7, 1.0, 13.8)
-	l.addEnemy(0, 22.7, 1.0, 12.8)
-
-	l.addEnemy(1, 19.7, 1.0, -12.8)
-	l.addEnemy(1, 20.7, 1.0, -15.8)
-	l.addEnemy(1, 22.7, 1.0, -14.8)
-
-	l.addLoot(0, 2.3, -0.3, 0.0)
-	l.addLoot(1, 1.2, -0.3, 2.0)
-	l.addLoot(2, 2.0, -0.3, 4.0)
-	l.addLoot(0, 15.0, 1.1, -0.2)
-	l.addLoot(1, 17.7, 1.1, 0.7)
-	l.addLoot(2, 20.2,1.1, -15.0)
-
-	l.addLoot(1, 18.2,1.1, -13.0)
-
-	l.addLoot(0, 22.2,1.1, -12.0)
-	l.addLoot(2, 20.2,1.1, 15.0)
-
-	l.addLoot(0, 2.2,-0.8, 20.0)
-	l.addLoot(0, -0.5,-0.8, 18.5)
-	l.addLoot(0, -2.0,-0.8, 20.7)
+	l.loadEnemies(1, 0)
+	l.loadEnemies(1, 1)
 }
 
 func (l *Level) load2(gl *webgl.Context) {
 	l.level = nil
+	l.exit = mgl32.Vec3{25.8, -1.3, -14.2}
 
-	for i := 0; i < 0; i++ {
-		l.level = append(l.level, Obj{})
-		p := "gfx/models/levels/level2_" + strconv.Itoa(i) + ".obj"
-		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
-	}
+	l.loadLevel(gl, 2, 21)
 
-	for i := 0; i < 0; i++ {
-		l.env = append(l.env, Obj{})
-		p := "gfx/models/levels/level2_env_" + strconv.Itoa(i) + ".obj"
-		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
-	}
+	l.loadEnv(gl, 2, 9)
 
-	l.addEnemy(1, 0.0, 0.0, 0.0)
-	l.addEnemy(0, 0.1, 0.0, 0.0)
-	l.addEnemy(2, 2.0, 0.0, 0.0)
+	l.loadEnemies(2, 0)
+	l.loadEnemies(2, 1)
+	l.loadEnemies(2, 2)
 
-	l.addLoot(0, 2.0, -0.3, 0.0)
-	l.addLoot(1, 2.0, -0.3, 2.0)
-	l.addLoot(2, 2.0, -0.3, 4.0)
-}
-
-func (l *Level) load3(gl *webgl.Context) {
-	l.level = nil
-
-	for i := 0; i < 0; i++ {
-		l.level = append(l.level, Obj{})
-		p := "gfx/models/levels/level3_" + strconv.Itoa(i) + ".obj"
-		l.level[i].loadObjH(gl, p, "0", false, true, "gfx/textures.png")
-	}
-
-	for i := 0; i < 0; i++ {
-		l.env = append(l.env, Obj{})
-		p := "gfx/models/levels/level3_env_" + strconv.Itoa(i) + ".obj"
-		l.env[i].loadObjH(gl, p, "0", false, true, "gfx/sprites.png")
-	}
-
-	l.addEnemy(1, 0.0, 0.0, 0.0)
-	l.addEnemy(0, 0.1, 0.0, 0.0)
-	l.addEnemy(2, 2.0, 0.0, 0.0)
-
-	l.addLoot(0, 2.0, -0.3, 0.0)
-	l.addLoot(1, 2.0, -0.3, 2.0)
-	l.addLoot(2, 2.0, -0.3, 4.0)
+	l.loadLoot(2, 0)
+	l.loadLoot(2, 1)
+	l.loadLoot(2, 2)
 }

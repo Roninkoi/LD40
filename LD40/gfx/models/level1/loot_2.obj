@@ -1,0 +1,12 @@
+# Blender v2.79 (sub 0) OBJ File: 'level0env.blend'
+# www.blender.org
+mtllib loot_2.mtl
+o obj2_Plane.029
+v 20.559566 1.272444 14.868528
+v 18.390766 1.272444 -15.142340
+v -0.275177 -0.250754 1.892601
+v 23.507374 1.272444 -12.511887
+vn -0.0901 0.9959 -0.0097
+usemtl None
+s off
+f 1//1 2//1 4//1 3//1

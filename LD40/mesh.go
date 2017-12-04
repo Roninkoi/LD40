@@ -190,6 +190,32 @@ func (m *Mesh) loadMesh(gl *webgl.Context, p string, t string) {
 	m.getTriSize()
 }
 
+
+func (m *Mesh) loadVerts(p string) {
+	s := readFile(p)
+
+	sa := parse(s)
+
+	m.clearMesh()
+
+	m.um = mgl32.Ident4()
+
+	for i := 0; i < len(sa); i++ {
+		if sa[i] == "v" {
+			if len(sa) > i+3 {
+				vx, _ := strconv.ParseFloat(sa[i+1], 32)
+				vy, _ := strconv.ParseFloat(sa[i+2], 32)
+				vz, _ := strconv.ParseFloat(sa[i+3], 32)
+
+				m.rawVertexData = append(m.rawVertexData, (float32)(vx))
+				m.rawVertexData = append(m.rawVertexData, (float32)(vy))
+				m.rawVertexData = append(m.rawVertexData, (float32)(vz))
+				m.rawVertexData = append(m.rawVertexData, 1.0)
+			}
+		}
+	}
+}
+
 func filledArray(l int, v float32) []float32 {
 	var a []float32
 

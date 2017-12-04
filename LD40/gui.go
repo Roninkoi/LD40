@@ -10,6 +10,8 @@ import (
 type GUI struct {
 	guiTex Texture
 
+	logo Sprite
+
 	textSprite Sprite
 
 	healthbar Sprite
@@ -127,12 +129,13 @@ func (g *GUI) tickGUI(ticks float32) {
 }
 
 func (g *GUI) drawStartScreen(r *Renderer) {
+	g.logo.animDraw(r)
 	g.renderFancyText(r, "- Press SPACE to start -", -0.25, -0.1, 0.02)
 }
 
 func (g *GUI) drawWinScreen(r *Renderer) {
 	g.renderText(r, "- You win! -", -0.13, 0.12, 0.02)
-	g.renderText(r, "Score: " + strconv.Itoa(g.score), -0.15, 0.06, 0.02)
+	g.renderText(r, "Score: " + strconv.Itoa(g.score), -0.13, 0.06, 0.02)
 
 	g.renderText(r, "Loot: (" + strconv.Itoa(g.coinnum) + ", " + strconv.Itoa(g.gemnum) + ", " + strconv.Itoa(g.beetlenum) + ") " + strconv.Itoa(g.lootPerc)+"%", -0.22, -0.0, 0.02)
 
@@ -186,6 +189,14 @@ func (g *GUI) loadGUI(gl *webgl.Context) {
 	g.guiTex.loadTexture(gl, "gfx/sprites.png")
 
 	g.textSprite.loadSprite(nil, "nil")
+
+	g.logo.loadSprite(nil, "nil")
+	g.logo.mesh.um = mgl32.Translate3D(0.0, 0.025, -0.15)
+	g.logo.mesh.um = g.logo.mesh.um.Mul4(mgl32.Scale3D(((90.0/52.0)*0.18)/0.55, 0.18, 1.0))
+	g.logo.mesh.um = g.logo.mesh.um.Mul4(mgl32.HomogRotate3DY((float32)(math.Pi) * 0.5))
+	g.logo.mesh.update()
+	g.logo.animLoad([]int{0}, 1.0, []mgl32.Vec4{
+		{161.0, 190.0, 90.0, 52.0}})
 
 	g.healthbar.loadSprite(nil, "nil")
 	g.healthbar.mesh.um = mgl32.Translate3D(-0.025, -0.17, -0.15)
