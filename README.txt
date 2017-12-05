@@ -1,7 +1,7 @@
 Tomb Robber, Ludum Dare 40
 Ronin748 2017
 
-You're a grave robber in an ancient egyptian tomb. Your task is to steal as many valuables as possible and get out before you anger the ancient spirits too much. The more you've stolen, the angrier the enemies are. 
+You're a grave robber in an ancient egyptian tomb. Your task is to steal as many valuables as possible and get out before you anger the ancient spirits too much. The more you've stolen, the angrier the enemies get. 
 
 The ankhmeter decreases every time you pick up an item. This causes you to slow down, and the enemies make more damage. The meter also replenishes with time. However, levels have a time limit. If the ankhmeter or timer goes to 0, you die.
 
