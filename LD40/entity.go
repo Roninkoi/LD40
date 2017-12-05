@@ -53,7 +53,7 @@ func (e *Entity) tickEnemy(playerPos mgl32.Vec3, camY float32, attacking bool) {
 	c := playerPos.Sub(e.obj.phys.pos.Add(mgl32.Vec3{0.0, -0.2, 0.0}))
 
 	movVec := c.Normalize().Mul(e.spd)
-	if c.Len() > 1.0 {
+	if c.Len() > 0.9 {
 		e.obj.phys.pos = e.obj.phys.pos.Add(movVec)
 		e.attacking = false
 	} else {
