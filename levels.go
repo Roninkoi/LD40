@@ -50,13 +50,15 @@ func (l *Level) stop() {
 }
 
 func (l *Level) addEnemy(t int, x float32, y float32, z float32) {
-	l.enemies = append(l.enemies, addEnemy(t, x, y, z))
-	l.enemies0 = append(l.enemies0, addEnemy(t, x, y, z))
+	newEnemy := addEnemy(t, x, y, z)
+	l.enemies = append(l.enemies, newEnemy)
+	l.enemies0 = append(l.enemies0, newEnemy)
 }
 
 func (l *Level) addLoot(t int, x float32, y float32, z float32) {
-	l.loot = append(l.loot, addLoot(t, x, y-0.3, z))
-	l.loot0 = append(l.loot0, addLoot(t, x, y-0.3, z))
+	newLoot := addLoot(t, x, y-0.3, z)
+	l.loot = append(l.loot, newLoot)
+	l.loot0 = append(l.loot0, newLoot)
 }
 
 func (l *Level) removeEnemy(i int) {

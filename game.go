@@ -98,15 +98,9 @@ func (g *Game) main(ftime *js.Object) {
 			", rt: ", g.render_time/(float64)(g.fps_ticks), " ms, tt: ",
 				g.tick_time/(float64)(g.fps_ticks), " ms\n")
 
-		fmt.Print("player pos: ")
-		fmt.Println(g.world.player.obj.phys.pos)
-/*
-		fmt.Print(" c: ")
-		fmt.Print(g.world.player.coins)
-		fmt.Print(" g: ")
-		fmt.Print(g.world.player.gems)
-		fmt.Print(" b: ")
-		fmt.Println(g.world.player.beetles)*/
+		fmt.Printf("draws: %d%s%d%s%d%s", g.renderer.draws,
+			", vertices: ", g.renderer.vertexNum, ", indices: ",
+			g.renderer.indexNum, "\n")
 
 		g.render_time = 0
 		g.tick_time = 0
@@ -122,9 +116,9 @@ func (g *Game) main(ftime *js.Object) {
 		g.render()
 	}
 
-	for timeNow() - g.time < 16.0 {
+	/*for timeNow() - g.time < 16.0 {
 		// wait around to sync fps on fast screens
-	}
+	}*/
 
 	js.Global.Call("requestAnimationFrame", g.main)
 }

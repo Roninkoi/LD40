@@ -102,8 +102,6 @@ func (g *GUI) tickGUI(ticks float32) {
 	g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.Scale3D(((36.0/32.0)*0.15)/0.55, 0.15, 1.0))
 	g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.HomogRotate3DZ((float32)(0.5 * math.Sin(g.scimitarswing+math.Pi))))
 	g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.Translate3D(-0.5, 1.0, 0.0))
-	//g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.Translate3D(0.2 + 0.09, -0.12, -0.18))
-	//g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.Scale3D(((36.0/32.0)*0.15)/0.55, 0.15, 1.0))
 	g.scimitar.mesh.um = g.scimitar.mesh.um.Mul4(mgl32.HomogRotate3DY((float32)(math.Pi) * 0.5))
 	g.scimitar.mesh.update()
 
@@ -138,8 +136,6 @@ func (g *GUI) drawWinScreen(r *Renderer) {
 	g.renderText(r, "Score: " + strconv.Itoa(g.score), -0.13, 0.06, 0.02)
 
 	g.renderText(r, "Loot: (" + strconv.Itoa(g.coinnum) + ", " + strconv.Itoa(g.gemnum) + ", " + strconv.Itoa(g.beetlenum) + ") " + strconv.Itoa(g.lootPerc)+"%", -0.22, -0.0, 0.02)
-
-	//g.renderText(r, "100%", -0.05, -0.065, 0.02)
 
 	g.renderText(r, "Time left: " + strconv.Itoa(g.seconds), -0.15, -0.055, 0.02)
 

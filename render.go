@@ -4,7 +4,6 @@ import (
 	"github.com/gopherjs/webgl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/gopherjs/gopherjs/js"
-	"fmt"
 	"math"
 )
 
@@ -234,15 +233,6 @@ func (g *Game) render() {
 	g.renderer.cflush()
 
 	g.renderer.disableVT = false
-
-	if (int)(g.ticks)%60 == 0 {
-		fmt.Print("draws ")
-		fmt.Print(g.renderer.draws)
-		fmt.Print(", vertices ")
-		fmt.Print(g.renderer.vertexNum)
-		fmt.Print(", indices ")
-		fmt.Println(g.renderer.indexNum)
-	}
 
 	g.render_time += timeNow() - rt_delta
 }

@@ -52,7 +52,7 @@ func (g *Game) gameInput() {
 		if g.input.left_pressed {
 			g.input.left_pressed = false
 
-			if (g.win || g.lose) {
+			if g.win || g.lose {
 				prev := g.world.currentLevel - 1
 
 				if prev <= 0 {
@@ -74,7 +74,7 @@ func (g *Game) gameInput() {
 		if g.input.right_pressed {
 			g.input.right_pressed = false
 
-			if (g.win || g.lose) {
+			if g.win || g.lose {
 				next := g.world.currentLevel + 1
 
 				if next >= 2 {
@@ -141,7 +141,7 @@ func (g *Game) tick() {
 		g.lose = true
 	}
 
-	g.world.score = (int)((float32)(g.world.player.coins*4 + g.world.player.gems*8 + g.world.player.beetles*16)*((float32)(g.world.seconds)*0.1+1.0))
+	g.world.score = (int)((float32)(g.world.player.coins*4 + g.world.player.gems*8 + g.world.player.beetles*16)*((float32)(g.world.timer)*0.1+1.0))
 
 	g.gui.ticks = g.ticks
 	g.gui.health = (float32)(g.world.player.health / 100.0)

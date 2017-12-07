@@ -18,9 +18,12 @@ func (t *Texture) loadTexture(gl *webgl.Context, p string) {
 	t.tex = gl.CreateTexture()
 	t.p = p
 
-	var img *js.Object
+	//var img *js.Object
+	img := &js.Object{}
 
 	img = js.Global.Get("document").Call("createElement", "img")
+	//img = js.Global.Get("document").Call("getElementById", "img")
+	img.Set("crossOrigin", "Anonymous")
 
 	imgLoaded := make(chan struct{})
 
