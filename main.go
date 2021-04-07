@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	fmt.Println("LD40 Ronin748 2017")
+	fmt.Println("LD40 Roninkoi 2017")
 
 	g := Game{}
 	g.Start()
