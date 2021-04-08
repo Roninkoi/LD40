@@ -71,6 +71,15 @@ func (g *Game) Start() {
 	g.input.init()
 	g.input.keyHandler()
 
+	// prevent spacebar scrolling
+	js.Global.Call("addEventListener", "keydown", func(event *js.Object) {
+		keycode := event.Get("keyCode").Int()
+		
+		if(keycode == 32 && event.Get("target") == g.document.Get("body")) {
+			event.Call("preventDefault");
+		}
+	}, true)
+
 	g.gui.loadGUI(g.gl)
 
 	g.start = true
