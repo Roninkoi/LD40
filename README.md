@@ -22,7 +22,7 @@ https://roninkoi.itch.io/tomb-robber
 
 ### Building
 
-This requires [GopherJS](https://github.com/gopherjs/gopherjs) and the correct version of golang (in this case g1.12.16). To download dependencies and compile to js:
+This requires [GopherJS](https://github.com/gopherjs/gopherjs) and the correct version of golang (in this case go1.12.16). To download dependencies and compile to js:
 ```
 go1.12.16 get
 gopherjs build
