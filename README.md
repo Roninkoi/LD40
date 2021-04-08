@@ -8,6 +8,10 @@ You're a grave robber in an ancient egyptian tomb. Your task is to steal as many
 
 The ankhmeter decreases every time you pick up an item. This causes you to slow down, and the enemies make more damage. The meter also replenishes with time. However, levels have a time limit. If the ankhmeter or timer goes to 0, you die.
 
+Written in Go from scratch using WebGL. Compiled to js using gopherjs.
+
+https://roninkoi.itch.io/tomb-robber
+
 ### Controls
 
 | Key | Action |
@@ -16,7 +20,11 @@ The ankhmeter decreases every time you pick up an item. This causes you to slow 
 | SPACE | Attack |
 | RIGHT/LEFT ARROWS | Rotate camera |
 
-Written in Go from scratch using WebGL. Compiled to js using gopherjs.
+### Building
 
-https://roninkoi.itch.io/tomb-robber
+This requires [GopherJS](https://github.com/gopherjs/gopherjs) and the correct version of golang (in this case g1.12.16). To download dependencies and compile to js:
+```
+go1.12.16 get
+gopherjs build
+```
 

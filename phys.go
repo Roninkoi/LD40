@@ -12,9 +12,11 @@ type Phys struct {
 	rPos mgl32.Vec3
 
 	v mgl32.Vec3
+	vd mgl32.Vec3
 	a mgl32.Vec3
 
 	isStatic bool
+	collisionNum int
 }
 
 func (p *Phys) init() {
@@ -25,6 +27,7 @@ func (p *Phys) init() {
 	p.rPos = mgl32.Vec3{0.0, 0.0, 0.0}
 
 	p.v = mgl32.Vec3{0.0, 0.0, 0.0}
+	p.vd = mgl32.Vec3{0.0, 0.0, 0.0}
 	p.a = mgl32.Vec3{0.0, 0.0, 0.0}
 }
 
@@ -157,6 +160,9 @@ func (p *PhysSys) physIsect(i int, j int) {
 	}
 
 	if isects {
+		p.objs[i].phys.collisionNum++
+		p.objs[j].phys.collisionNum++
+		
 		p.objs[i].isects = true
 		p.objs[j].isects = true
 
@@ -177,12 +183,12 @@ func (p *PhysSys) physIsect(i int, j int) {
 		v = nv.Mul(v.Len()*0.95 + 0.001)
 
 		if !p.objs[i].phys.isStatic {
-			p.objs[i].phys.pos = p.objs[i].phys.pos.Add(v)
-			p.objs[i].phys.v = p.objs[i].phys.v.Add(v)
+			//p.objs[i].phys.pos = p.objs[i].phys.pos.Add(v)
+			p.objs[i].phys.vd = p.objs[i].phys.vd.Add(v)
 		}
 		if !p.objs[j].phys.isStatic {
-			p.objs[j].phys.pos = p.objs[j].phys.pos.Sub(v)
-			p.objs[j].phys.v = p.objs[j].phys.v.Sub(v)
+			//p.objs[j].phys.pos = p.objs[j].phys.pos.Sub(v)
+			p.objs[j].phys.vd = p.objs[j].phys.vd.Sub(v)
 		}
 	}
 }
@@ -208,6 +214,16 @@ func (p *PhysSys) update() {
 	}
 	for i := 0; i < len(p.objs); i++ {
 		if !p.objs[i].phys.isStatic && p.objs[i].phys.v.Len() > epsilon {
+			if p.objs[i].phys.collisionNum > 0 {
+				p.objs[i].phys.vd = p.objs[i].phys.vd.Mul(1.0 / (float32)(p.objs[i].phys.collisionNum))
+			}
+			
+			p.objs[i].phys.pos = p.objs[i].phys.pos.Add(p.objs[i].phys.vd)
+			p.objs[i].phys.v = p.objs[i].phys.v.Add(p.objs[i].phys.vd)
+			
+			p.objs[i].phys.vd = mgl32.Vec3{0.0, 0.0, 0.0}
+			p.objs[i].phys.collisionNum = 0
+			
 			if p.objs[i].phys.v.Len() <= epsilon {
 				p.objs[i].phys.v = mgl32.Vec3{0.0, 0.0, 0.0}
 			}
